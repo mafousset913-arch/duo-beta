@@ -72,13 +72,30 @@
             <h3>Quiz vocabulaire</h3>
             <button id="newQuiz" class="secondary-button">Nouvelle question</button>
           </div>
-          <div class="quiz-controls">
-            <label for="quizDirectionSelect">Direction</label>
-            <select id="quizDirectionSelect">
-              <option value="auto">Auto (toutes directions)</option>
-              <option value="ui->other">Langue UI vers autre</option>
-              <option value="other->ui">Autre vers langue UI</option>
-            </select>
+          <div class="quiz-translator">
+            <div class="translator-pair">
+              <div class="translator-column">
+                <label for="quizSourceLang">De</label>
+                <select id="quizSourceLang">
+                  <option value="fr">Français 🇫🇷</option>
+                  <option value="en">Anglais 🇬🇧</option>
+                  <option value="es">Espagnol 🇪🇸</option>
+                  <option value="de">Allemand 🇩🇪</option>
+                </select>
+              </div>
+              <div class="translator-swap">
+                <button id="swapLangs" class="swap-button" title="Inverser les langues" aria-label="Inverser les langues">⇄</button>
+              </div>
+              <div class="translator-column">
+                <label for="quizTargetLang">Vers</label>
+                <select id="quizTargetLang">
+                  <option value="en">Anglais 🇬🇧</option>
+                  <option value="fr">Français 🇫🇷</option>
+                  <option value="es">Espagnol 🇪🇸</option>
+                  <option value="de">Allemand 🇩🇪</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div class="quiz-question">
             <p id="quizDirectionLabel">Traduisez ce mot :</p>
