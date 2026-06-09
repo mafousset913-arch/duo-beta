@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Language Master AI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">LM</div>
+        <div>
+          <p class="eyebrow">Language Master AI</p>
+          <h1>Apprenez avec style</h1>
+        </div>
+      </div>
+      <div class="lang-switcher" aria-label="Sélecteur de langue">
+        <label for="languageSelect">Langue</label>
+        <select id="languageSelect">
+          <option value="fr">Français 🇫🇷</option>
+          <option value="en">Anglais 🇬🇧</option>
+          <option value="es">Espagnol 🇪🇸</option>
+          <option value="de">Allemand 🇩🇪</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro-card card">
+        <div>
+          <h2>Votre plateforme d’apprentissage des langues</h2>
+          <p>Progressez en vocabulaire, pratiquez la prononciation et testez-vous avec des quiz instantanés.</p>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric">
+            <span>5</span>
+            <p>Langues disponibles</p>
+          </div>
+          <div class="metric">
+            <span>20+</span>
+            <p>Leçons interactives</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid-layout">
+        <article class="card progress-card">
+          <div class="card-header">
+            <h3>Progression</h3>
+            <span id="currentBadge">Débutant</span>
+          </div>
+          <div class="progress-info">
+            <div>
+              <span class="label">XP</span>
+              <h2 id="xpValue">0</h2>
+            </div>
+            <div>
+              <span class="label">Niveau</span>
+              <h2 id="levelValue">1</h2>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <p class="progress-subtitle" id="progressSubtitle">0 / 100 XP vers le niveau suivant</p>
+        </article>
+
+        <article class="card quiz-card">
+          <div class="card-header">
+            <h3>Quiz vocabulaire</h3>
+            <button id="newQuiz" class="secondary-button">Nouvelle question</button>
+          </div>
+          <div class="quiz-question">
+            <p>Traduisez ce mot :</p>
+            <h4 id="quizWord">Bonjour</h4>
+          </div>
+          <div class="quiz-choices" id="choicesContainer"></div>
+          <div class="quiz-actions">
+            <button id="listenButton" class="audio-button">Écouter</button>
+            <p class="feedback" id="quizFeedback">Choisissez une réponse pour commencer.</p>
+          </div>
+        </article>
+
+        <article class="card chat-card">
+          <div class="card-header">
+            <h3>Mini IA</h3>
+            <span>Réponses rapides</span>
+          </div>
+          <div class="chat-window" id="chatWindow">
+            <div class="chat-item bot">Bonjour ! Posez-moi une question de langue.</div>
+          </div>
+          <div class="chat-input-row">
+            <input id="chatInput" type="text" placeholder="Écris un message..." aria-label="Message IA" />
+            <button id="sendChat" class="primary-button">Envoyer</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="card core-values">
+        <div>
+          <h3>Fonctionnalités</h3>
+          <p>Un apprentissage simple et immersif, entièrement dans votre navigateur.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-pill">Quiz en direct</div>
+          <div class="feature-pill">Progression et badges</div>
+          <div class="feature-pill">Prononciation audio</div>
+          <div class="feature-pill">Support multilingue</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
