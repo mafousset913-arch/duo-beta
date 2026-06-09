@@ -5,10 +5,16 @@ const currentBadge = document.getElementById('currentBadge');
 const progressFill = document.getElementById('progressFill');
 const progressSubtitle = document.getElementById('progressSubtitle');
 const quizWord = document.getElementById('quizWord');
+const quizDirectionLabel = document.getElementById('quizDirectionLabel');
+const quizDirectionSelect = document.getElementById('quizDirectionSelect');
 const choicesContainer = document.getElementById('choicesContainer');
 const quizFeedback = document.getElementById('quizFeedback');
 const newQuizButton = document.getElementById('newQuiz');
 const listenButton = document.getElementById('listenButton');
+const quizDirectionLabelText = document.querySelector('label[for="quizDirectionSelect"]');
+const quizDirectionAutoOption = document.querySelector('#quizDirectionSelect option[value="auto"]');
+const quizDirectionUiOption = document.querySelector('#quizDirectionSelect option[value="ui->other"]');
+const quizDirectionOtherOption = document.querySelector('#quizDirectionSelect option[value="other->ui"]');
 const chatWindow = document.getElementById('chatWindow');
 const chatInput = document.getElementById('chatInput');
 const sendChat = document.getElementById('sendChat');
@@ -30,6 +36,10 @@ const translations = {
     askBot: 'Écris un message...',
     send: 'Envoyer',
     badge: ['Débutant', 'Apprenti', 'Intermédiaire', 'Avancé', 'Expert'],
+    directionLabel: 'Direction',
+    directionAuto: 'Auto (toutes directions)',
+    directionUiToOther: 'Langue UI vers autre',
+    directionOtherToUi: 'Autre vers langue UI',
     chatReplies: {
       greeting: 'Salut ! Je peux t’aider à pratiquer les langues.',
       practice: 'Essaie de traduire un mot ou demande une astuce de vocabulaire.',
@@ -44,6 +54,10 @@ const translations = {
     chooseAnswer: 'Choose an answer to begin.',
     newQuestion: 'New question',
     listen: 'Listen',
+    directionLabel: 'Direction',
+    directionAuto: 'Auto (all directions)',
+    directionUiToOther: 'UI language → other',
+    directionOtherToUi: 'Other → UI language',
     askBot: 'Type a message...',
     send: 'Send',
     badge: ['Beginner', 'Apprentice', 'Intermediate', 'Advanced', 'Expert'],
@@ -61,6 +75,10 @@ const translations = {
     chooseAnswer: 'Selecciona una respuesta para comenzar.',
     newQuestion: 'Nueva pregunta',
     listen: 'Escuchar',
+    directionLabel: 'Dirección',
+    directionAuto: 'Auto (todas las direcciones)',
+    directionUiToOther: 'Idioma UI → otro',
+    directionOtherToUi: 'Otro → idioma UI',
     askBot: 'Escribe un mensaje...',
     send: 'Enviar',
     badge: ['Principiante', 'Aprendiz', 'Intermedio', 'Avanzado', 'Experto'],
@@ -78,6 +96,10 @@ const translations = {
     chooseAnswer: 'Wähle eine Antwort, um zu beginnen.',
     newQuestion: 'Neue Frage',
     listen: 'Anhören',
+    directionLabel: 'Richtung',
+    directionAuto: 'Auto (alle Richtungen)',
+    directionUiToOther: 'UI-Sprache → andere',
+    directionOtherToUi: 'Andere → UI-Sprache',
     askBot: 'Schreibe eine Nachricht...',
     send: 'Senden',
     badge: ['Anfänger', 'Lehrling', 'Mittelstufe', 'Fortgeschritten', 'Experte'],
@@ -146,18 +168,52 @@ function setTextContent(target, text) {
   if (target) target.textContent = text;
 }
 
+function getRandomLanguage(exclude) {
+  const keys = Object.keys(languages).filter((code) => code !== exclude);
+  return randomItem(keys);
+}
+
+function formatDirectionLabel(sourceLang, targetLang) {
+  const sourceName = languages[sourceLang].label;
+  const targetName = languages[targetLang].label;
+  return `${translations[appState.language].prompt} (${languages[sourceLang].flag} ${sourceName} → ${languages[targetLang].flag} ${targetName})`;
+}
+
 function buildQuiz() {
   const quiz = randomItem(quizBank);
-  const correct = quiz[appState.language];
+  let sourceLang;
+  let targetLang;
+
+  const directionMode = quizDirectionSelect.value;
+  if (directionMode === 'ui->other') {
+    sourceLang = appState.language;
+    targetLang = getRandomLanguage(sourceLang);
+  } else if (directionMode === 'other->ui') {
+    targetLang = appState.language;
+    sourceLang = getRandomLanguage(targetLang);
+  } else {
+    sourceLang = getRandomLanguage();
+    targetLang = getRandomLanguage(sourceLang);
+  }
+
+  const correct = quiz[targetLang];
   const wrongOptions = shuffle(
     quizBank
       .filter((item) => item.key !== quiz.key)
-      .map((item) => item[appState.language])
+      .map((item) => item[targetLang])
   ).slice(0, 3);
   const choices = shuffle([correct, ...wrongOptions]);
 
-  appState.activeQuiz = { prompt: quiz.key, answer: correct, choices };
-  quizWord.textContent = quiz.key;
+  appState.activeQuiz = {
+    prompt: quiz[sourceLang],
+    sourceLang,
+    targetLang,
+    answer: correct,
+    choices
+  };
+
+  quizDirectionLabel.textContent = formatDirectionLabel(sourceLang, targetLang);
+  quizWord.textContent = quiz[sourceLang];
   quizFeedback.textContent = translations[appState.language].chooseAnswer;
   choicesContainer.innerHTML = '';
 
@@ -211,13 +267,13 @@ function getLocalizedMessage(key) {
 }
 
 function speakWord() {
-  const text = appState.activeQuiz ? appState.activeQuiz.answer : translations[appState.language].starter;
+  const text = appState.activeQuiz ? appState.activeQuiz.prompt : translations[appState.language].starter;
   if (!('speechSynthesis' in window)) {
     quizFeedback.textContent = 'Speech synthesis non supporté.';
     return;
   }
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = getSpeakLang(appState.language);
+  utterance.lang = getSpeakLang(appState.activeQuiz ? appState.activeQuiz.sourceLang : appState.language);
   utterance.rate = 0.9;
   utterance.pitch = 1.05;
   window.speechSynthesis.cancel();
@@ -273,8 +329,13 @@ function generateChatReply(message) {
 function updateUIForLanguage() {
   newQuizButton.textContent = translations[appState.language].newQuestion;
   listenButton.textContent = translations[appState.language].listen;
+  quizDirectionLabelText.textContent = translations[appState.language].directionLabel;
+  quizDirectionAutoOption.textContent = translations[appState.language].directionAuto;
+  quizDirectionUiOption.textContent = translations[appState.language].directionUiToOther;
+  quizDirectionOtherOption.textContent = translations[appState.language].directionOtherToUi;
   quizFeedback.textContent = translations[appState.language].chooseAnswer;
   chatInput.placeholder = translations[appState.language].askBot;
+  sendChat.textContent = translations[appState.language].send;
   document.documentElement.lang = appState.language;
   buildQuiz();
 }
@@ -283,6 +344,8 @@ languageSelect.addEventListener('change', (event) => {
   appState.language = event.target.value;
   updateUIForLanguage();
 });
+
+quizDirectionSelect.addEventListener('change', () => buildQuiz());
 
 newQuizButton.addEventListener('click', () => buildQuiz());
 listenButton.addEventListener('click', () => speakWord());

@@ -72,8 +72,16 @@
             <h3>Quiz vocabulaire</h3>
             <button id="newQuiz" class="secondary-button">Nouvelle question</button>
           </div>
+          <div class="quiz-controls">
+            <label for="quizDirectionSelect">Direction</label>
+            <select id="quizDirectionSelect">
+              <option value="auto">Auto (toutes directions)</option>
+              <option value="ui->other">Langue UI vers autre</option>
+              <option value="other->ui">Autre vers langue UI</option>
+            </select>
+          </div>
           <div class="quiz-question">
-            <p>Traduisez ce mot :</p>
+            <p id="quizDirectionLabel">Traduisez ce mot :</p>
             <h4 id="quizWord">Bonjour</h4>
           </div>
           <div class="quiz-choices" id="choicesContainer"></div>
